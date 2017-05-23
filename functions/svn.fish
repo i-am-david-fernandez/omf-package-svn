@@ -1,3 +1,19 @@
+function __svn_all -d "Iterate a subversion command over all discovered repositories."
+    set -l root './'
+    if test -d $argv[1]
+        set root $argv[1]
+        set -e argv[1]
+    end
+
+    for repo in (find $root -type d -name ".svn")
+        set -l repo (realpath "$repo/..")
+        echo-info --minor ">> $repo"
+        pushd $repo
+        svn $argv
+        popd
+    end
+end
+
 function __svn_status -d "Subversion status command wrapper."
     for line in (command svn status $argv)
         set -l tag (echo $line | awk '{print $1}')
@@ -41,20 +57,11 @@ function svn -d "Subversion command wrapper"
 
         switch $arg
             case '--all'
+                __svn_all $argv | less -rFX
+                return
 
-                set -l root './'
-                if test -d $argv[1]
-                    set root $argv[1]
-                    set -e argv[1]
-                end
-
-                for repo in (find $root -type d -name ".svn")
-                    set -l repo (realpath "$repo/..")
-                    echo-info --minor ">> $repo"
-                    pushd $repo
-                    svn $argv
-                    popd
-                end
+            case 'branch-source'
+                command svn log -v -r0:HEAD --stop-on-copy --limit 1 $argv
                 return
 
             case 'status'
