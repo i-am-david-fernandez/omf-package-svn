@@ -48,7 +48,6 @@ function __svn_status -d "Subversion status command wrapper."
 end
 
 function svn -d "Subversion command wrapper"
-    # Package entry-point
 
     set new_args
 
@@ -69,8 +68,12 @@ function svn -d "Subversion command wrapper"
                 return
 
             case 'diff'
-                command svn diff --diff-cmd icdiff --extensions "--line-numbers --no-bold" $argv | less -rFX
-                return
+                if which icdiff
+                    command svn diff --diff-cmd icdiff --extensions "--line-numbers --no-bold" $argv | less -rFX
+                    return
+                else
+                    set new_args $new_args $arg
+                end
 
             case '*'
                 set new_args $new_args $arg
