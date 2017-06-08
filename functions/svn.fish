@@ -68,7 +68,7 @@ function svn -d "Subversion command wrapper"
                 return
 
             case 'diff'
-                if which icdiff
+                if which icdiff > /dev/null ^&1
                     command svn diff --diff-cmd icdiff --extensions "--line-numbers --no-bold" $argv | less -rFX
                     return
                 else
