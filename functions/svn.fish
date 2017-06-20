@@ -51,14 +51,16 @@ function svn -d "Subversion command wrapper"
 
     set new_args
 
+    if test $argv[1] = '--all'
+        set -e argv[1]
+        __svn_all $argv | less -rFX
+        return
+    end
+
     for arg in $argv
         set -e argv[1]
 
         switch $arg
-            case '--all'
-                __svn_all $argv | less -rFX
-                return
-
             case 'branch-source'
                 command svn log -v -r0:HEAD --stop-on-copy --limit 1 $argv
                 return
